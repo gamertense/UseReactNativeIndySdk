@@ -28,13 +28,13 @@ const App = () => {
               <Button title="Open wallet" onPress={openWallet} />
             </View>
             <View style={styles.sectionContainer}>
+              <Button title="DID wallet" onPress={DIDWallet} />
+            </View>
+            <View style={styles.sectionContainer}>
               <Button title="Close wallet" onPress={closeWallet} />
             </View>
             <View style={styles.sectionContainer}>
               <Button title="Delete wallet" onPress={deleteWallet} />
-            </View>
-            <View style={styles.sectionContainer}>
-              <Button title="DID wallet" onPress={DIDWallet} />
             </View>
           </View>
         </ScrollView>
