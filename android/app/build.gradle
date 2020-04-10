@@ -181,6 +181,7 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.facebook.react:react-native:+"  // From node_modules
+    implementation "com.evernym:vcx:0.8.0"
     // implementation 'net.java.dev.jna:jna:5.2.0' // Fix jna version to deploy on mobile device
 
     if (enableHermes) {
