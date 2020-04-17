@@ -2,10 +2,6 @@
 
 package com.usereactnativeindysdk.rnindy;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.os.Environment;
 import android.util.Base64;
 import android.util.Log;
 import android.app.ActivityManager;
@@ -21,7 +17,6 @@ import com.evernym.sdk.vcx.credential.CredentialApi;
 import com.evernym.sdk.vcx.credential.GetCredentialCreateMsgidResult;
 import com.evernym.sdk.vcx.proof.CreateProofMsgIdResult;
 import com.evernym.sdk.vcx.proof.DisclosedProofApi;
-import com.evernym.sdk.vcx.proof.ProofApi;
 import com.evernym.sdk.vcx.token.TokenApi;
 import com.evernym.sdk.vcx.utils.UtilsApi;
 import com.evernym.sdk.vcx.vcx.AlreadyInitializedException;
@@ -31,11 +26,7 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -44,16 +35,13 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.security.SecureRandom;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import android.net.Uri;
 import java.io.InputStream;
-import java.lang.Long;
 import java.util.HashMap;
 import java.util.Map;
 
