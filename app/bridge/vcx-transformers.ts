@@ -1,4 +1,4 @@
-import type { VcxProvisionResult, InitWithGenesisPathConfig, VcxInitConfig } from './type-cxs'
+import type { VcxProvisionResult, CxsInitConfig, VcxInitConfig } from './type-cxs'
 import { UserOneTimeInfo } from './type-user-store'
 
 export function convertVcxProvisionResultToUserOneTimeInfo(provision: VcxProvisionResult): UserOneTimeInfo {
@@ -12,10 +12,7 @@ export function convertVcxProvisionResultToUserOneTimeInfo(provision: VcxProvisi
   }
 }
 
-export async function convertCxsInitToVcxInit(
-  init: InitWithGenesisPathConfig,
-  walletName: string
-): Promise<VcxInitConfig> {
+export async function convertCxsInitToVcxInit(init: CxsInitConfig, walletName: string): Promise<VcxInitConfig> {
   return {
     agency_endpoint: init.agencyUrl,
     agency_did: init.agencyDID,

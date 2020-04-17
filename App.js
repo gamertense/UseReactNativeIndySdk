@@ -8,8 +8,16 @@
 
 import React from 'react'
 import { SafeAreaView, StyleSheet, ScrollView, View, Text, StatusBar, Button } from 'react-native'
+import sleepPromise from 'sleep-promise'
 import { Colors } from 'react-native/Libraries/NewAppScreen'
-import { createOneTimeInfo, init, createConnectionWithInvite } from './app/bridge/RNCXs'
+import {
+  createOneTimeInfo,
+  init,
+  createConnectionWithInvite,
+  acceptInvitationVcx,
+  getConnectionState,
+  updateConnectionState,
+} from './app/bridge/RNCXs'
 
 const App = () => {
   return (
@@ -20,7 +28,7 @@ const App = () => {
           <View style={styles.body}>
             <Text style={styles.sectionDescription}>Check console.log for test results</Text>
             <View style={styles.sectionContainer}>
-              <Button title="Create wallet" onPress={createWallet} />
+              <Button title="Provision agent and wallet" onPress={provisionAgentAndWallet} />
             </View>
             <View style={styles.sectionContainer}>
               <Button title="Make connection" onPress={createConnection} />
@@ -32,8 +40,8 @@ const App = () => {
   )
 }
 
-async function createWallet() {
-  console.log('createWallet() onPress')
+async function provisionAgentAndWallet() {
+  console.log('on press provisionAgentAndWallet()')
   try {
     const agencyConfig = {
       agencyUrl: 'http://192.168.1.35:8080',
@@ -54,10 +62,22 @@ async function createWallet() {
 }
 
 async function createConnection() {
-  console.log('createConnectionWithInvite() onPress')
+  console.log('on press createConnection()')
   try {
-    const res = await createConnectionWithInvite()
-    console.log('connection status: ', res)
+    const resultNum = await createConnectionWithInvite()
+    console.log('connection number: ', resultNum)
+
+    await acceptInvitationVcx(resultNum)
+
+    let connectionState = await getConnectionState(resultNum)
+    // TODO: declare state type
+    while (connectionState !== 4) {
+      await sleepPromise(2000)
+      await updateConnectionState(resultNum)
+      console.log('in loop')
+      connectionState = await getConnectionState(resultNum)
+    }
+    console.info('Connection to alice was Accepted!')
   } catch (e) {
     console.warn(e)
   }
