@@ -9,7 +9,7 @@
 import React from 'react'
 import { SafeAreaView, StyleSheet, ScrollView, View, Text, StatusBar, Button } from 'react-native'
 import { Colors } from 'react-native/Libraries/NewAppScreen'
-import { createOneTimeInfo, createConnectionWithInvite } from './app/bridge/RNCXs'
+import { createOneTimeInfo, init, createConnectionWithInvite } from './app/bridge/RNCXs'
 
 const App = () => {
   return (
@@ -35,13 +35,19 @@ const App = () => {
 async function createWallet() {
   console.log('createWallet() onPress')
   try {
-    let res
-    res = await createOneTimeInfo({
+    const agencyConfig = {
       agencyUrl: 'http://192.168.1.35:8080',
       agencyDID: 'VsKV7grR1BUE29mG2Fm2kX',
       agencyVerificationKey: 'Hezce2UWMZ3wUhVkh2LfKSs8nDzWwzs2Win7EzNN3YaR',
-    })
-    console.log('Result: ', res)
+    }
+    const oneTimeRes = await createOneTimeInfo(agencyConfig)
+    console.log('One time result: ', oneTimeRes)
+    const initConfig = {
+      ...agencyConfig,
+      ...oneTimeRes,
+    }
+    const initResult = await init(initConfig)
+    console.log('initResult', initResult)
   } catch (e) {
     console.warn(e)
   }

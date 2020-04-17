@@ -1,31 +1,19 @@
 import { NativeModules } from 'react-native'
-import type { VcxProvision, VcxProvisionResult } from './type-cxs'
+import type { AgencyPoolConfig, VcxProvision, VcxProvisionResult, CxsInitConfig, VcxInitConfig } from './type-cxs'
+import type { UserOneTimeInfo } from './type-user-store'
 import type { InvitationPayload } from '../invitation/type-invitation'
-import { convertVcxProvisionResultToUserOneTimeInfo } from './vcx-transformers'
+import { convertVcxProvisionResultToUserOneTimeInfo, convertCxsInitToVcxInit } from './vcx-transformers'
 
 const { RNIndy } = NativeModules
 
-export type AgencyPoolConfig = {
-  agencyUrl: string
-  agencyDID: string
-  agencyVerificationKey: string
-}
-
-export type UserOneTimeInfo = {
-  oneTimeAgencyDid: string
-  oneTimeAgencyVerificationKey: string
-  myOneTimeDid: string
-  myOneTimeVerificationKey: string
-  myOneTimeAgentDid: string
-  myOneTimeAgentVerificationKey: string
-}
+const wallet_name = 'alice_wallet'
 
 export async function createOneTimeInfo(agencyConfig: AgencyPoolConfig): Promise<UserOneTimeInfo> {
   const vcxProvisionConfig: VcxProvision = {
     agency_url: agencyConfig.agencyUrl,
     agency_did: agencyConfig.agencyDID,
     agency_verkey: agencyConfig.agencyVerificationKey,
-    wallet_name: 'alice_wallet',
+    wallet_name,
     wallet_key: '123',
     protocol_type: '3.0',
   }
@@ -34,17 +22,30 @@ export async function createOneTimeInfo(agencyConfig: AgencyPoolConfig): Promise
   return convertVcxProvisionResultToUserOneTimeInfo(provisionResult)
 }
 
+export async function init(config: CxsInitConfig): Promise<boolean> {
+  // const genesis_path: string = await RNIndy.getGenesisPathWithConfig(config.poolConfig, fileName)
+  // const genesis_path = '/storage/emulated/0/Download/pool_transactions_genesis.txn'
+
+  const initConfig = {
+    ...config,
+  }
+  const vcxInitConfig: VcxInitConfig = await convertCxsInitToVcxInit(initConfig, wallet_name)
+  const initResult: boolean = await RNIndy.init(JSON.stringify(vcxInitConfig))
+
+  return initResult
+}
+
 export async function createConnectionWithInvite(): Promise<number> {
   const invite_details = {
-    '@id': 'aa54cd60-bcf7-440e-a200-99da55f30a5d',
+    '@id': 'd2c4312c-8b66-4d22-b71b-f82143064ca6',
     '@type': 'did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/connections/1.0/invitation',
     label: 'alice',
-    recipientKeys: ['HvX5JJ3o7qLqpooqq5ENjDHzoBcd9u11xY2Lur1afPKc'],
-    routingKeys: ['DaUxe968JwUJb4JJvZRjTVtEhSzPAXkaPm2SLe9vNYMY', 'Hezce2UWMZ3wUhVkh2LfKSs8nDzWwzs2Win7EzNN3YaR'],
-    serviceEndpoint: 'http://localhost:8080/agency/msg',
+    recipientKeys: ['H8XZQ5bGfM7hsB7MoBSJi18ZsNCVnjGZQqpnFtCJmJkc'],
+    routingKeys: ['FiVNcZDRjjRrsXFSNbxpnA7yDQRaY68NKrPRrKwECb1C', 'Hezce2UWMZ3wUhVkh2LfKSs8nDzWwzs2Win7EzNN3YaR'],
+    serviceEndpoint: 'http://192.168.1.35:8080/agency/msg',
   }
   const connectionHandle: number = await RNIndy.createConnectionWithInvite(
-    'aa54cd60-bcf7-440e-a200-99da55f30a5d',
+    'd2c4312c-8b66-4d22-b71b-f82143064ca6',
     JSON.stringify(invite_details)
   )
 
