@@ -7,11 +7,9 @@
  */
 
 import React from 'react'
-import { SafeAreaView, StyleSheet, ScrollView, View, Text, StatusBar, Button, ToastAndroid } from 'react-native'
-
-import indy from 'rn-indy-sdk'
-
+import { SafeAreaView, StyleSheet, ScrollView, View, Text, StatusBar, Button } from 'react-native'
 import { Colors } from 'react-native/Libraries/NewAppScreen'
+import { createOneTimeInfo, createConnectionWithInvite } from './app/bridge/RNCXs'
 
 const App = () => {
   return (
@@ -25,16 +23,7 @@ const App = () => {
               <Button title="Create wallet" onPress={createWallet} />
             </View>
             <View style={styles.sectionContainer}>
-              <Button title="Open wallet" onPress={openWallet} />
-            </View>
-            <View style={styles.sectionContainer}>
-              <Button title="DID wallet" onPress={DIDWallet} />
-            </View>
-            <View style={styles.sectionContainer}>
-              <Button title="Close wallet" onPress={closeWallet} />
-            </View>
-            <View style={styles.sectionContainer}>
-              <Button title="Delete wallet" onPress={deleteWallet} />
+              <Button title="Make connection" onPress={createConnection} />
             </View>
           </View>
         </ScrollView>
@@ -43,59 +32,26 @@ const App = () => {
   )
 }
 
-let walletHandle
-
 async function createWallet() {
-  console.log('createWallet onPress')
+  console.log('createWallet() onPress')
   try {
-    const result = await indy.createWallet({ id: 'wallet-1234' }, { key: 'key' })
-    console.log('result', result)
-    ToastAndroid.showWithGravityAndOffset(`The result is ${result}`, ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50)
+    let res
+    res = await createOneTimeInfo({
+      agencyUrl: 'http://192.168.1.35:8080',
+      agencyDID: 'VsKV7grR1BUE29mG2Fm2kX',
+      agencyVerificationKey: 'Hezce2UWMZ3wUhVkh2LfKSs8nDzWwzs2Win7EzNN3YaR',
+    })
+    console.log('Result: ', res)
   } catch (e) {
     console.warn(e)
   }
 }
 
-async function openWallet() {
+async function createConnection() {
+  console.log('createConnectionWithInvite() onPress')
   try {
-    console.log('openWallet onPress')
-    const result = await indy.openWallet({ id: 'wallet-1234' }, { key: 'key' })
-    walletHandle = result
-    console.log('result', result)
-    ToastAndroid.showWithGravityAndOffset(`The result is ${result}`, ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50)
-  } catch (e) {
-    console.warn(e)
-  }
-}
-
-async function closeWallet() {
-  console.log('closeWallet onPress')
-  try {
-    const result = await indy.closeWallet(walletHandle)
-    console.log('result', result)
-    ToastAndroid.showWithGravityAndOffset(`The result is ${result}`, ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50)
-  } catch (e) {
-    console.warn(e)
-  }
-}
-
-async function deleteWallet() {
-  console.log('deleteWallet onPress')
-  try {
-    const result = await indy.deleteWallet({ id: 'wallet-1234' }, { key: 'key' })
-    console.log('result', result)
-    ToastAndroid.showWithGravityAndOffset(`The result is ${result}`, ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50)
-  } catch (e) {
-    console.warn(e)
-  }
-}
-
-async function DIDWallet() {
-  console.log('getDIDWallet onPress')
-  try {
-    const result = await indy.createAndStoreMyDid(walletHandle, {})
-    console.log('result', result)
-    ToastAndroid.showWithGravityAndOffset(`The result is ${result}`, ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50)
+    const res = await createConnectionWithInvite()
+    console.log('connection status: ', res)
   } catch (e) {
     console.warn(e)
   }
