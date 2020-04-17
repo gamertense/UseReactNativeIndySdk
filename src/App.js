@@ -1,11 +1,3 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
- */
-
 import React from 'react'
 import { SafeAreaView, StyleSheet, ScrollView, View, Text, StatusBar, Button } from 'react-native'
 import sleepPromise from 'sleep-promise'
@@ -17,7 +9,7 @@ import {
   acceptInvitationVcx,
   getConnectionState,
   updateConnectionState,
-} from './app/bridge/RNCXs'
+} from './util/RNCXs'
 
 const App = () => {
   return (
@@ -74,7 +66,6 @@ async function createConnection() {
     while (connectionState !== 4) {
       await sleepPromise(2000)
       await updateConnectionState(resultNum)
-      console.log('in loop')
       connectionState = await getConnectionState(resultNum)
     }
     console.info('Connection to alice was Accepted!')
