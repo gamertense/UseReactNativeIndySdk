@@ -170,4 +170,38 @@ public class RNIndyModule extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
+
+    @ReactMethod
+    public void connectionGetState(int connectionHandle, Promise promise) throws VcxException {
+        Log.d(TAG, "connectionGetState() called with: connectionHandle = [" + connectionHandle + "]");
+		try {
+            ConnectionApi.connectionGetState(connectionHandle).exceptionally((t) -> {
+                Log.e(TAG, "connectionGetState: ", t);
+                promise.reject("FutureException", t.getMessage());
+                return null;
+            }).thenAccept(result -> BridgeUtils.resolveIfValid(promise, result));
+
+        } catch (Exception e) {
+            promise.reject("connectionGetState", e.getMessage());
+        }
+	}
+
+    @ReactMethod
+    public void vcxConnectionUpdateState(int connectionHandle, Promise promise) throws VcxException {
+        Log.d(TAG, "vcxConnectionUpdateState() called with: connectionHandle = [" + connectionHandle + "]");
+		try {
+            ConnectionApi.vcxConnectionUpdateState(connectionHandle).exceptionally((t) -> {
+                Log.e(TAG, "vcxConnectionUpdateState: ", t);
+                promise.reject("FutureException", t.getMessage());
+                return null;
+            }).thenAccept(result -> {
+                if (result != -1) {
+                    BridgeUtils.resolveIfValid(promise, result);
+                }
+            });
+
+        } catch (Exception e) {
+            promise.reject("vcxConnectionUpdateState", e.getMessage());
+        }
+	}
 }
