@@ -56,17 +56,17 @@ async function provisionAgentAndWallet() {
 async function createConnection() {
   console.log('on press createConnection()')
   try {
-    const resultNum = await createConnectionWithInvite()
-    console.log('connection number: ', resultNum)
+    const connectionHandle = await createConnectionWithInvite()
+    console.log('connection number: ', connectionHandle)
 
-    await acceptInvitationVcx(resultNum)
+    await acceptInvitationVcx(connectionHandle)
 
-    let connectionState = await getConnectionState(resultNum)
+    let connectionState = await getConnectionState(connectionHandle)
     // TODO: declare state type
     while (connectionState !== 4) {
       await sleepPromise(2000)
-      await updateConnectionState(resultNum)
-      connectionState = await getConnectionState(resultNum)
+      await updateConnectionState(connectionHandle)
+      connectionState = await getConnectionState(connectionHandle)
     }
     console.info('Connection to alice was Accepted!')
   } catch (e) {
