@@ -204,4 +204,93 @@ public class RNIndyModule extends ReactContextBaseJavaModule {
             promise.reject("vcxConnectionUpdateState", e.getMessage());
         }
 	}
+
+    @ReactMethod
+    public void proofGetRequests(int connectionHandle, Promise promise) throws VcxException {
+        Log.d(TAG, "proofGetRequests() called with: connectionHandle = [" + connectionHandle + "]");
+		try {
+            DisclosedProofApi.proofGetRequests(connectionHandle).exceptionally((t) -> {
+                Log.e(TAG, "proofGetRequests: ", t);
+                promise.reject("FutureException", t.getMessage());
+                return null;
+            }).thenAccept(result -> BridgeUtils.resolveIfValid(promise, result));
+
+        } catch (Exception e) {
+            promise.reject("proofGetRequests", e.getMessage());
+        }
+	}
+
+    @ReactMethod
+    public void proofCreateWithRequest(String sourceId, String proofRequest, Promise promise) {
+        Log.d(TAG, "proofCreateWithRequest() called with sourceId = ["+ sourceId +"], proofRequest =["+ proofRequest +"]");
+
+        try {
+            DisclosedProofApi.proofCreateWithRequest(sourceId, proofRequest).exceptionally((t)-> {
+                Log.d(TAG, "proofCreateWithRequest", t);
+                promise.reject("VcxException", t.getMessage());
+                return -1;
+            }).thenAccept(result -> {
+                if (result != -1) {
+                    BridgeUtils.resolveIfValid(promise, result);
+                }
+            });
+        } catch(VcxException e) {
+            promise.reject("VcxException", e.getMessage());
+        }
+    }
+
+    @ReactMethod
+    public void proofRetrieveCredentials(int proofHandle, Promise promise) {
+        Log.d(TAG, "proofRetrieveCredentials() called with: proofHandle = [" + proofHandle + "]");
+
+        try {
+            DisclosedProofApi.proofRetrieveCredentials(proofHandle).exceptionally((t)-> {
+                Log.d(TAG, "proofRetrieveCredentials", t);
+                promise.reject("VcxException", t.getMessage());
+                return -1;
+            }).thenAccept(result -> {
+                if (result != -1) {
+                    BridgeUtils.resolveIfValid(promise, result);
+                }
+            });
+        } catch(VcxException e) {
+            promise.reject("VcxException", e.getMessage());
+        }
+    }
+
+    @ReactMethod
+    public void generateProof(String proofRequestId, String requestedAttrs, String requestedPredicates,
+            String proofName, Promise promise) {
+        try {
+            ProofApi.proofCreate(proofRequestId, requestedAttrs, requestedPredicates, proofName).exceptionally((t) -> {
+                Log.e(TAG, "generateProof: ", t);
+                promise.reject("FutureException", t.getMessage());
+                return -1;
+            }).thenAccept(result -> {
+                if (result != -1) {
+                    BridgeUtils.resolveIfValid(promise, result);
+                }
+            });
+        } catch (VcxException e) {
+            promise.reject("VCXException", e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    @ReactMethod
+    public void sendProof(int proofHandle, int connectionHandle, Promise promise) {
+        try {
+            DisclosedProofApi.proofSend(proofHandle, connectionHandle).exceptionally((t) -> {
+                Log.e(TAG, "proofSend: ", t);
+                promise.reject("FutureException", t.getMessage());
+                return -1;
+            }).thenAccept(result -> {
+                if (result != -1) {
+                    BridgeUtils.resolveIfValid(promise, result);
+                }
+            });
+        } catch (VcxException e) {
+            promise.reject("VCXException", e.getMessage());
+        }
+    }
 }
