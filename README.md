@@ -26,11 +26,18 @@ After clicking `DID Wallet` button, you would see the following:
 
 ## Troubleshoot
 
+- `java.lang.OutOfMemoryError` or `Invalid main APK outputs : EarlySyncBuildOutput(...)`
+
+  1. Open `android` folder with Android Studio
+  2. Go to Build > Clean Project
+  3. Go to File > Sync Project with Gradle files
+  4. Run the app with Android Studio instead of command line
+
 - `SSL peer shut down incorrectly`
 
   Restart the computer
 
-- `Unsupported Modules Detected` pop-up error message on Android Studio or `java.lang.OutOfMemoryError` when installing on device/emulator.
+- `Unsupported Modules Detected` pop-up error message on Android Studio when installing on device/emulator.
 
   Run `cd android && ./gradlew clean` and then
 
