@@ -206,6 +206,91 @@ public class RNIndyModule extends ReactContextBaseJavaModule {
 	}
 
     @ReactMethod
+    public void credentialGetOffers(int connectionHandle, Promise promise) {
+        try {
+            CredentialApi.credentialGetOffers(connectionHandle).exceptionally((t) -> {
+                Log.e(TAG, "getCredentialOffers: ", t);
+                promise.reject("FutureException", t.getMessage());
+                return null;
+            }).thenAccept(result -> BridgeUtils.resolveIfValid(promise, result));
+        } catch (VcxException e) {
+            promise.reject("VCXException", e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    @ReactMethod
+    public void credentialCreateWithOffer(String sourceId, String credentialOffer, Promise promise) {
+        try {
+            CredentialApi.credentialCreateWithOffer(sourceId, credentialOffer).exceptionally((t) -> {
+                Log.e(TAG, "createCredentialWithOffer: ", t);
+                promise.reject("FutureException", t.getMessage());
+                return null;
+            }).thenAccept(result -> BridgeUtils.resolveIfValid(promise, result));
+        } catch (VcxException e) {
+            promise.reject("VCXException", e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    @ReactMethod
+    public void credentialSendRequest(int credentialHandle, int connectionHandle, int paymentHandle, Promise promise) {
+        // it would return an error code in callback
+        // we resolve promise with an empty string after success
+        // or reject promise with error code
+
+        try {
+            CredentialApi.credentialSendRequest(credentialHandle, connectionHandle, paymentHandle)
+                    .exceptionally((t) -> {
+                        Log.e(TAG, "sendClaimRequest: ", t);
+                        promise.reject("FutureException", t.getMessage());
+                        return null;
+                    }).thenAccept(result -> {
+                        BridgeUtils.resolveIfValid(promise, result);
+                    });
+        } catch (VcxException e) {
+            promise.reject("VCXException", e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    @ReactMethod
+    public void credentialGetState(int credentialHandle, Promise promise) {
+        try {
+            CredentialApi.credentialGetState(credentialHandle).exceptionally((t) -> {
+                Log.e(TAG, "credentialGetState: ", t);
+                promise.reject("FutureException", t.getMessage());
+                return -1;
+            }).thenAccept(result -> {
+                if (result != -1) {
+                    BridgeUtils.resolveIfValid(promise, result);
+                }
+            });
+        } catch (VcxException e) {
+            promise.reject("VCXException", e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    @ReactMethod
+    public void credentialUpdateState(int credentialHandle, Promise promise) {
+        try {
+            CredentialApi.credentialUpdateState(credentialHandle).exceptionally((t) -> {
+                Log.e(TAG, "credentialUpdateState: ", t);
+                promise.reject("FutureException", t.getMessage());
+                return -1;
+            }).thenAccept(result -> {
+                if (result != -1) {
+                    BridgeUtils.resolveIfValid(promise, result);
+                }
+            });
+        } catch (VcxException e) {
+            promise.reject("VCXException", e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    @ReactMethod
     public void proofGetRequests(int connectionHandle, Promise promise) throws VcxException {
         Log.d(TAG, "proofGetRequests() called with: connectionHandle = [" + connectionHandle + "]");
 		try {
