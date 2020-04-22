@@ -49,16 +49,45 @@ export async function acceptInvitationVcx(connectionHandle: number) {
   console.log('acceptInvitationVcx result: ', result)
 }
 
-export async function getConnectionState(connectionHandle: number) {
+export async function getConnectionState(connectionHandle: number): Promise<number> {
   const state = await RNIndy.connectionGetState(connectionHandle)
-  console.log('getConnectionState() result = ', state)
+  console.debug('getConnectionState() result = ', state)
   return state
 }
 
 export async function updateConnectionState(connectionHandle: number) {
   const res = await RNIndy.vcxConnectionUpdateState(connectionHandle)
-  console.log('updateConnectionState() result = ', res)
   return res
+}
+
+export async function getCredentialOffers(connectionHandle: number): Promise<string> {
+  const offers = await RNIndy.credentialGetOffers(connectionHandle)
+  console.debug('getCredentialOffers', offers)
+  return offers
+}
+
+export async function createCredentialWithOffer(sourceId: number, offer: string): Promise<string> {
+  return await RNIndy.credentialCreateWithOffer(sourceId, offer)
+}
+
+export async function sendCredentialRequest(
+  credentialHandle: number,
+  connectionHandle: number,
+  paymentHandle: number
+): Promise<void> {
+  return await RNIndy.credentialSendRequest(credentialHandle, connectionHandle, paymentHandle)
+}
+
+export async function getCredentialState(credentialHandle: number): Promise<number> {
+  const state: number = await RNIndy.credentialGetState(credentialHandle)
+  console.debug('credentialState', state)
+  return state
+}
+
+export async function updateCredentialState(credentialHandle: number) {
+  const updatedState: number = await RNIndy.credentialUpdateState(credentialHandle)
+
+  return updatedState
 }
 
 export async function proofGetRequests(connectionHandle: number): Promise<string> {
