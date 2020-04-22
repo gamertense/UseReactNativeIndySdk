@@ -1,6 +1,7 @@
 import { NativeModules } from 'react-native'
 import type { AgencyPoolConfig, VcxProvision, VcxProvisionResult, CxsInitConfig, VcxInitConfig } from './type-cxs'
 import type { UserOneTimeInfo } from './type-user-store'
+import type { invitationPayload } from './type-invitation'
 import { convertVcxProvisionResultToUserOneTimeInfo, convertCxsInitToVcxInit } from './vcx-transformers'
 
 const { RNIndy } = NativeModules
@@ -30,16 +31,8 @@ export async function init(config: CxsInitConfig): Promise<boolean> {
   return initResult
 }
 
-export async function createConnectionWithInvite(): Promise<number> {
-  const invite_details = {
-    '@id': '713c4c91-0925-43b0-b935-f87c30d54667',
-    '@type': 'did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/connections/1.0/invitation',
-    label: 'alice',
-    recipientKeys: ['D5BGv22Vp4EAg7eFTkKrC4roJmxGi3iWVpYc1JTixctk'],
-    routingKeys: ['25ssTgwWp63Vru4JpSyCzWrqyjyD7DdDqCtmw9RWagAx', 'Hezce2UWMZ3wUhVkh2LfKSs8nDzWwzs2Win7EzNN3YaR'],
-    serviceEndpoint: 'http://192.168.1.35:8080/agency/msg',
-  }
-  const connectionHandle: number = await RNIndy.createConnectionWithInvite('faber', JSON.stringify(invite_details))
+export async function createConnectionWithInvite(inviteDetails: invitationPayload): Promise<number> {
+  const connectionHandle: number = await RNIndy.createConnectionWithInvite('faber', JSON.stringify(inviteDetails))
 
   return connectionHandle
 }
@@ -66,4 +59,28 @@ export async function updateConnectionState(connectionHandle: number) {
   const res = await RNIndy.vcxConnectionUpdateState(connectionHandle)
   console.log('updateConnectionState() result = ', res)
   return res
+}
+
+export async function proofGetRequests(connectionHandle: number): Promise<string> {
+  return await RNIndy.proofGetRequests(connectionHandle)
+}
+
+export async function proofCreateWithRequest(sourceId: string, proofRequest: string): Promise<number> {
+  return await RNIndy.proofCreateWithRequest(sourceId, proofRequest)
+}
+
+export async function proofRetrieveCredentials(proofHandle: number): Promise<string> {
+  return await RNIndy.proofRetrieveCredentials(proofHandle)
+}
+
+export async function generateProof(
+  proofHandle: number,
+  selectedCredentials: string,
+  selfAttestedAttributes: string
+): Promise<void> {
+  return await RNIndy.proofGenerate(proofHandle, selectedCredentials, selfAttestedAttributes)
+}
+
+export async function sendProof(proofHandle: number, connectionHandle: number): Promise<void> {
+  return await RNIndy.proofSend(proofHandle, connectionHandle)
 }
