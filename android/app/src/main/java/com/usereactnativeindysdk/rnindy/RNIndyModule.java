@@ -2,54 +2,24 @@
 
 package com.usereactnativeindysdk.rnindy;
 
-import android.util.Base64;
 import android.util.Log;
-import android.app.ActivityManager;
-import android.app.ActivityManager.MemoryInfo;
-import android.content.Context;
-import android.content.ContextWrapper;
 
 import com.usereactnativeindysdk.BridgeUtils;
 import com.evernym.sdk.vcx.VcxException;
-import com.evernym.sdk.vcx.wallet.WalletApi;
 import com.evernym.sdk.vcx.connection.ConnectionApi;
 import com.evernym.sdk.vcx.credential.CredentialApi;
-import com.evernym.sdk.vcx.credential.GetCredentialCreateMsgidResult;
-import com.evernym.sdk.vcx.proof.CreateProofMsgIdResult;
 import com.evernym.sdk.vcx.proof.DisclosedProofApi;
-import com.evernym.sdk.vcx.token.TokenApi;
 import com.evernym.sdk.vcx.utils.UtilsApi;
 import com.evernym.sdk.vcx.vcx.AlreadyInitializedException;
 import com.evernym.sdk.vcx.vcx.VcxApi;
-import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.WritableMap;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.security.SecureRandom;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-import android.net.Uri;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.Nullable;
 
 public class RNIndyModule extends ReactContextBaseJavaModule {
-    public static final String REACT_CLASS = "RNIndy";
-    public static final String TAG = "RNIndy::";
+    private static final String REACT_CLASS = "RNIndy";
+    private static final String TAG = "RNIndy::";
     private static final int BUFFER = 2048;
     private static ReactApplicationContext reactContext = null;
     // TODO:Remove this class once integration with vcx is done
@@ -242,7 +212,7 @@ public class RNIndyModule extends ReactContextBaseJavaModule {
         try {
             CredentialApi.credentialSendRequest(credentialHandle, connectionHandle, paymentHandle)
                     .exceptionally((t) -> {
-                        Log.e(TAG, "sendClaimRequest: ", t);
+                        Log.e(TAG, "credentialSendRequest: ", t);
                         promise.reject("FutureException", t.getMessage());
                         return null;
                     }).thenAccept(result -> {
