@@ -45,7 +45,7 @@ const HomeScreen = () => {
         console.log('Error! initResult should be true, please see the log.')
       }
     } catch (e) {
-      console.warn(e)
+      console.error(e)
     }
   }
 
@@ -61,29 +61,33 @@ const HomeScreen = () => {
         await updateConnectionState(_connectionHandle)
         connectionState = await getConnectionState(_connectionHandle)
       }
-      console.info('Connection to Alice was accepted!')
+      console.info('Connection is established')
       setConnectionHandle(_connectionHandle)
     } catch (e) {
-      console.warn(e)
+      console.error('makeConnection()', e)
     }
   }
 
   const credentialOfferDemo = async () => {
-    const offers = JSON.parse(await getCredentialOffers(connectionHandle))
-    console.info(`Alice found ${offers.length} credential offers.`)
-    // Create a credential object from the credential offer
-    const credentialHandle = await createCredentialWithOffer('credential', JSON.stringify(offers[0]))
+    try {
+      const offers = JSON.parse(await getCredentialOffers(connectionHandle))
+      console.info(`Alice found ${offers.length} credential offers.`)
+      // Create a credential object from the credential offer
+      const credentialHandle = await createCredentialWithOffer('credential', JSON.stringify(offers[0]))
 
-    console.info('After receiving credential offer, send credential request')
-    console.debug(`credentialHandle = ${credentialHandle}, connectionHandle = ${connectionHandle}`)
-    await sendCredentialRequest(credentialHandle, connectionHandle, 0)
+      console.info('After receiving credential offer, send credential request')
+      console.debug(`credentialHandle = ${credentialHandle}, connectionHandle = ${connectionHandle}`)
+      await sendCredentialRequest(credentialHandle, connectionHandle, 0)
 
-    console.info('Poll agency and accept credential offer from faber')
-    let credentialState = await getCredentialState(credentialHandle)
-    while (credentialState !== 4) {
-      await sleepPromise(2000)
-      await updateCredentialState(credentialHandle)
-      credentialState = await getCredentialState(credentialHandle)
+      console.info('Poll agency and accept credential offer from faber')
+      let credentialState = await getCredentialState(credentialHandle)
+      while (credentialState !== 4) {
+        await sleepPromise(2000)
+        await updateCredentialState(credentialHandle)
+        credentialState = await getCredentialState(credentialHandle)
+      }
+    } catch (e) {
+      console.error('credentialOfferDemo()', e)
     }
   }
 
@@ -110,7 +114,7 @@ const HomeScreen = () => {
       console.log('Sending the proof...')
       await sendProof(proofHandle, connectionHandle)
     } catch (err) {
-      console.error('proofRequestDemo', err)
+      console.error('proofRequestDemo()', err)
     }
   }
 
