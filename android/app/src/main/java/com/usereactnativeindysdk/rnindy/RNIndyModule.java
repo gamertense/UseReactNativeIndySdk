@@ -247,38 +247,34 @@ public class RNIndyModule extends ReactContextBaseJavaModule {
             DisclosedProofApi.proofRetrieveCredentials(proofHandle).exceptionally((t)-> {
                 Log.d(TAG, "proofRetrieveCredentials", t);
                 promise.reject("VcxException", t.getMessage());
-                return -1;
-            }).thenAccept(result -> {
-                if (result != -1) {
-                    BridgeUtils.resolveIfValid(promise, result);
-                }
-            });
+                return null;
+            }).thenAccept(result -> BridgeUtils.resolveIfValid(promise, result));
         } catch(VcxException e) {
             promise.reject("VcxException", e.getMessage());
         }
     }
 
     @ReactMethod
-    public void generateProof(String proofRequestId, String requestedAttrs, String requestedPredicates,
-            String proofName, Promise promise) {
+    public void proofGenerate(int proofHandle, String selectedCredentials, String selfAttestedAttributes,
+            Promise promise) {
         try {
-            ProofApi.proofCreate(proofRequestId, requestedAttrs, requestedPredicates, proofName).exceptionally((t) -> {
-                Log.e(TAG, "generateProof: ", t);
-                promise.reject("FutureException", t.getMessage());
-                return -1;
-            }).thenAccept(result -> {
-                if (result != -1) {
-                    BridgeUtils.resolveIfValid(promise, result);
-                }
-            });
+            DisclosedProofApi.proofGenerate(proofHandle, selectedCredentials, selfAttestedAttributes)
+                    .exceptionally((t) -> {
+                        Log.e(TAG, "proofGenerate: ", t);
+                        promise.reject("FutureException", t.getMessage());
+                        return -1;
+                    }).thenAccept(result -> {
+                        if (result != -1) {
+                            BridgeUtils.resolveIfValid(promise, result);
+                        }
+                    });
         } catch (VcxException e) {
             promise.reject("VCXException", e.getMessage());
-            e.printStackTrace();
         }
     }
 
     @ReactMethod
-    public void sendProof(int proofHandle, int connectionHandle, Promise promise) {
+    public void proofSend(int proofHandle, int connectionHandle, Promise promise) {
         try {
             DisclosedProofApi.proofSend(proofHandle, connectionHandle).exceptionally((t) -> {
                 Log.e(TAG, "proofSend: ", t);
