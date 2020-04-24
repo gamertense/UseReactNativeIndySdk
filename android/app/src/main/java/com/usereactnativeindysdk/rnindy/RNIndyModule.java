@@ -2,6 +2,7 @@
 
 package com.usereactnativeindysdk.rnindy;
 
+import android.content.ContextWrapper;
 import android.util.Log;
 
 import com.usereactnativeindysdk.BridgeUtils;
@@ -16,6 +17,10 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class RNIndyModule extends ReactContextBaseJavaModule {
     private static final String REACT_CLASS = "RNIndy";
@@ -56,6 +61,24 @@ public class RNIndyModule extends ReactContextBaseJavaModule {
                 BridgeUtils.resolveIfValid(promise, result);
             });
         } catch (VcxException e) {
+            promise.reject("VCXException", e.getMessage());
+        }
+    }
+
+    @ReactMethod
+    public void getGenesisPathWithConfig(String poolConfig, String fileName, Promise promise) {
+        Log.d(TAG, "getGenesisPathWithConfig() called with: poolConfig = [" + poolConfig + "], promise = [" + promise
+                + "]");
+        ContextWrapper cw = new ContextWrapper(reactContext);
+        File genFile = new File(cw.getFilesDir().toString() + "/genesis_" + fileName + ".txn");
+        if (genFile.exists()) {
+            genFile.delete();
+        }
+
+        try (FileOutputStream fos = new FileOutputStream(genFile)) {
+            fos.write(poolConfig.getBytes());
+            promise.resolve(genFile.getAbsolutePath());
+        } catch (IOException e) {
             promise.reject("VCXException", e.getMessage());
             e.printStackTrace();
         }
@@ -140,7 +163,7 @@ public class RNIndyModule extends ReactContextBaseJavaModule {
             promise.reject(e);
         }
     }
-
+    
     @ReactMethod
     public void connectionGetState(int connectionHandle, Promise promise) throws VcxException {
         Log.d(TAG, "connectionGetState() called with: connectionHandle = [" + connectionHandle + "]");
@@ -218,6 +241,23 @@ public class RNIndyModule extends ReactContextBaseJavaModule {
                     }).thenAccept(result -> {
                         BridgeUtils.resolveIfValid(promise, result);
                     });
+        } catch (VcxException e) {
+            promise.reject("VCXException", e.getMessage());
+        }
+    }
+
+    @ReactMethod
+    public void serializeClaimOffer(int credentialHandle, Promise promise) {
+        // it would return error code, json string of credential inside callback
+
+        try {
+            CredentialApi.credentialSerialize(credentialHandle).exceptionally((t) -> {
+                Log.e(TAG, "serializeClaimOffer: ", t);
+                promise.reject("FutureException", t.getMessage());
+                return null;
+            }).thenAccept(result -> {
+                BridgeUtils.resolveIfValid(promise, result);
+            });
         } catch (VcxException e) {
             promise.reject("VCXException", e.getMessage());
             e.printStackTrace();

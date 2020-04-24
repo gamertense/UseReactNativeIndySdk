@@ -4,7 +4,7 @@ export type AgencyPoolConfig = {
   agencyUrl: string
   agencyDID: string
   agencyVerificationKey: string
-  // poolConfig: string
+  poolConfig: string
 }
 
 export type VcxProvision = {
@@ -40,7 +40,7 @@ export type VcxInitConfig = {
   agency_endpoint: string
   agency_did: string
   agency_verkey: string
-  // genesis_path: string
+  genesis_path: string
   wallet_key: string
   // config: string
   // pool_name: string
@@ -58,3 +58,16 @@ export type VcxInitConfig = {
 export type CxsInitConfig = UserOneTimeInfo & AgencyPoolConfig
 
 export type InitWithGenesisPathConfig = CxsInitConfig & { genesis_path: string }
+
+export type StateType = {
+  None: 0
+  Initialized: 1
+  OfferSent: 2
+  RequestReceived: 3
+  Accepted: 4
+  Unfulfilled: 5
+  Expired: 6
+  Revoked: 7
+  Redirected: 8
+  Rejected: 9
+}

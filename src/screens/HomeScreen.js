@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { SafeAreaView, StyleSheet, ScrollView, View, Text, StatusBar, Button } from 'react-native'
 import { Colors } from 'react-native/Libraries/NewAppScreen'
 import sleepPromise from 'sleep-promise'
-import { agencyConfig } from '../config/agency-pool'
+import { agencyConfig, poolConfigStr } from '../config/agency-pool'
 import {
   createOneTimeInfo,
   init,
@@ -36,9 +36,10 @@ const HomeScreen = () => {
       console.log('One time result: ', oneTimeRes)
       const initConfig = {
         ...agencyConfig,
+        poolConfig: poolConfigStr,
         ...oneTimeRes,
       }
-      const initResult = await init(initConfig)
+      const initResult = await init(initConfig, 'alice')
       if (initResult) {
         setCreateConnectionDisabled(false)
       } else {
@@ -110,7 +111,7 @@ const HomeScreen = () => {
       }
 
       console.log('Generating the proof...')
-      await generateProof(proofHandle, JSON.stringify(credentials), '')
+      await generateProof(proofHandle, JSON.stringify(credentials), '{}')
       console.log('Sending the proof...')
       await sendProof(proofHandle, connectionHandle)
     } catch (err) {

@@ -1,5 +1,12 @@
 import { NativeModules } from 'react-native'
-import type { AgencyPoolConfig, VcxProvision, VcxProvisionResult, CxsInitConfig, VcxInitConfig } from './type-cxs'
+import type {
+  AgencyPoolConfig,
+  VcxProvision,
+  VcxProvisionResult,
+  CxsInitConfig,
+  VcxInitConfig,
+  InitWithGenesisPathConfig,
+} from './type-cxs'
 import type { UserOneTimeInfo } from './type-user-store'
 import type { invitationPayload } from './type-invitation'
 import { convertVcxProvisionResultToUserOneTimeInfo, convertCxsInitToVcxInit } from './vcx-transformers'
@@ -15,17 +22,20 @@ export async function createOneTimeInfo(agencyConfig: AgencyPoolConfig): Promise
     agency_verkey: agencyConfig.agencyVerificationKey,
     wallet_name,
     wallet_key: '123',
-    protocol_type: '3.0',
+    protocol_type: '2.0',
   }
   const provisionVcxResult: string = await RNIndy.createOneTimeInfo(JSON.stringify(vcxProvisionConfig))
   const provisionResult: VcxProvisionResult = JSON.parse(provisionVcxResult)
   return convertVcxProvisionResultToUserOneTimeInfo(provisionResult)
 }
 
-export async function init(config: CxsInitConfig): Promise<boolean> {
-  // const genesis_path: string = await RNIndy.getGenesisPathWithConfig(config.poolConfig, fileName)
-  // const genesis_path = '/storage/emulated/0/Download/pool_transactions_genesis.txn'
-  const vcxInitConfig: VcxInitConfig = await convertCxsInitToVcxInit(config, wallet_name)
+export async function init(config: CxsInitConfig, fileName: string): Promise<boolean> {
+  const genesis_path: string = await RNIndy.getGenesisPathWithConfig(config.poolConfig, fileName)
+  const initConfig: InitWithGenesisPathConfig = {
+    ...config,
+    genesis_path,
+  }
+  const vcxInitConfig: VcxInitConfig = await convertCxsInitToVcxInit(initConfig, wallet_name)
   const initResult: boolean = await RNIndy.init(JSON.stringify(vcxInitConfig))
 
   return initResult
@@ -33,7 +43,7 @@ export async function init(config: CxsInitConfig): Promise<boolean> {
 
 export async function createConnectionWithInvite(inviteDetails: invitationPayload): Promise<number> {
   const connectionHandle: number = await RNIndy.createConnectionWithInvite('faber', JSON.stringify(inviteDetails))
-
+  console.debug(`connectionHandle = ${connectionHandle}`)
   return connectionHandle
 }
 
@@ -46,7 +56,7 @@ export async function acceptInvitationVcx(connectionHandle: number) {
   // we are hard coding connection option to QR
   const connectionOptions = { connection_type: 'QR', phone: '' }
   const result: string = await RNIndy.vcxAcceptInvitation(connectionHandle, JSON.stringify(connectionOptions))
-  console.log('acceptInvitationVcx result: ', result)
+  console.debug('acceptInvitationVcx result: ', result)
 }
 
 export async function getConnectionState(connectionHandle: number): Promise<number> {
@@ -66,7 +76,7 @@ export async function getCredentialOffers(connectionHandle: number): Promise<str
   return offers
 }
 
-export async function createCredentialWithOffer(sourceId: number, offer: string): Promise<string> {
+export async function createCredentialWithOffer(sourceId: number, offer: string): Promise<number> {
   return await RNIndy.credentialCreateWithOffer(sourceId, offer)
 }
 
@@ -75,7 +85,8 @@ export async function sendCredentialRequest(
   connectionHandle: number,
   paymentHandle: number
 ): Promise<void> {
-  return await RNIndy.credentialSendRequest(credentialHandle, connectionHandle, paymentHandle)
+  await RNIndy.credentialSendRequest(credentialHandle, connectionHandle, paymentHandle)
+  console.log('serializeClaimOffer\n', await RNIndy.serializeClaimOffer(credentialHandle))
 }
 
 export async function getCredentialState(credentialHandle: number): Promise<number> {
