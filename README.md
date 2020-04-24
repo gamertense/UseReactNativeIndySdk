@@ -26,7 +26,19 @@ After clicking `DID Wallet` button, you would see the following:
 
 ## Troubleshoot
 
-- `java.lang.OutOfMemoryError` or `Invalid main APK outputs : EarlySyncBuildOutput(...)`
+- `java.lang.OutOfMemoryError`
+
+  1. Run these commands at project directory:
+
+  ```bash
+  cd android
+  ./gradlew clean
+  ```
+
+  2. Close and open Terminal again
+  3. Go to this project directory and run `yarn android`
+
+- `Invalid main APK outputs : EarlySyncBuildOutput(...)`
 
   1. Open `android` folder with Android Studio
   2. Go to Build > Clean Project
